@@ -99,7 +99,7 @@ Module SocketServerModule
             Dim nSize As Integer
             Try
                 Dim ns As NetworkStream = clientSocket.GetStream()
-                nSize = CInt(clientSocket.ReceiveBufferSize)
+                nSize = clientSocket.ReceiveBufferSize
                 ReDim bytesFrom(nSize + 1)
                 ns.Read(bytesFrom, 0, nSize)
                 dataFromClient = System.Text.Encoding.ASCII.GetString(bytesFrom)
