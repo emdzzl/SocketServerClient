@@ -93,12 +93,15 @@ Module SocketServerModule
             ParseMessage = msg
         End Function
         Private Sub HandleRequest()
-            Dim bytesFrom(10024) As Byte
+            Dim bytesFrom(1024) As Byte
             Dim dataFromClient As String
             Dim str As String
+            Dim nSize As Integer
             Try
                 Dim ns As NetworkStream = clientSocket.GetStream()
-                ns.Read(bytesFrom, 0, CInt(clientSocket.ReceiveBufferSize))
+                nSize = CInt(clientSocket.ReceiveBufferSize)
+                ReDim bytesFrom(nSize + 1)
+                ns.Read(bytesFrom, 0, nSize)
                 dataFromClient = System.Text.Encoding.ASCII.GetString(bytesFrom)
                 str = ParseMessage(dataFromClient)
                 'echo the clients message back to the server
