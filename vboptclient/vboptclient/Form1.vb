@@ -68,7 +68,7 @@ Public Class Form1
         Dim clientSocket As New System.Net.Sockets.TcpClient()  ' create socket
         'setup message text
         END_MARK = "!"
-        Message = "OPT1~root~password~MAX~Example~ssmith~001" & END_MARK
+        Message = "OPT1~userid~password~MAX~Example~ssmith~001" & END_MARK
         textBox.Clear()
         'connect to server at address and port entred into textbox fields
         clientSocket.Connect(tbAddress.Text, Int(tbPort.Text))
@@ -79,17 +79,20 @@ Public Class Form1
         serverStream.Write(outStream, 0, outStream.Length)
         serverStream.Flush()
         Dim returndata As String = ""
-        Do 'Receive loop
+        
+        Do 
+            'Receive loop
+            Application.DoEvents()
             serverStream = clientSocket.GetStream()   'stream to receive data from server
             Dim buffSize As Integer
-            Dim inStream(10024) As Byte
+            Dim inStream(1024) As Byte
             buffSize = clientSocket.ReceiveBufferSize
+            ReDim inStream(buffSize + 1)
             serverStream.Read(inStream, 0, buffSize)    'read data from server
             returndata = System.Text.Encoding.ASCII.GetString(inStream)   'as ascii string
-            readData = "" + returndata
-            'textBox.Text = textBox.Text & returndata   ' add to textBox
             textBox.AppendText(returndata)
-        Loop While String.Compare(returndata, "") <> 0 ' while returndata not blank
+         Loop While serverStream.DataAvailable
+         
         serverStream.Close()   'dispose stream
         clientSocket.Close()   'destroy socket 
         LoadGrid()
