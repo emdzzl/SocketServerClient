@@ -68,17 +68,20 @@ Public Class fmOptimize
         serverStream.Write(outStream, 0, outStream.Length)
         serverStream.Flush()
         Dim returndata As String = ""
-        Do 'Receive loop
+        
+        Do 
+            'Receive loop
+            Application.DoEvents()
             serverStream = clientSocket.GetStream()   'stream to receive data from server
             Dim buffSize As Integer
-            Dim inStream(10024) As Byte
+            Dim inStream(1024) As Byte
             buffSize = clientSocket.ReceiveBufferSize
+            ReDim inStream(buffSize + 1)
             serverStream.Read(inStream, 0, buffSize)    'read data from server
             returndata = System.Text.Encoding.ASCII.GetString(inStream)   'as ascii string
-            readData = "" + returndata
-            'textBox.Text = textBox.Text & returndata   ' add to textBox
             TextBox.AppendText(returndata)
-        Loop While String.Compare(returndata, "") <> 0 ' while returndata not blank
+        Loop While serverStream.DataAvailable
+        
         serverStream.Close()   'dispose stream
         clientSocket.Close()   'destroy socket 
         'stopTime = Now
